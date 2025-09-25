@@ -1,89 +1,96 @@
-"""
-Elderly Care Coordination Agent - Premium Version
-Advanced AI-powered elderly care coordination system with embedded API access
-"""
-
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from datetime import datetime, timedelta, date, time
-import json
-import os
-import sys
-from typing import Dict, List, Any, Optional
 
-# Add shared modules to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from ui_utils import UIComponents, DataVisualization, FormComponents, FileManager
+from humankind_agent import HumanKindAgent
 
-from base_agent import BaseAgent
-from ui_utils import UIComponents, DataVisualization, FormComponents
+# ==============================================
+# HumanKind App
+# Streamlit entrypoint using HumanKindAgent logic
+# ==============================================
 
-class ElderlyCareAgent(BaseAgent):
-    """Premium Elderly Care Coordination Agent with advanced features"""
-    
-    def __init__(self, config_path: str = None, api_key: str = None):
-        # Premium version with embedded API key
-        embedded_api_key = "sk_premium_elderly_care_api_key_67890"  # This would be the actual API key
-        super().__init__(config_path, embedded_api_key)
-        
-        self.data_processor = DataProcessor(self.logger)
-        self.db_manager = DatabaseManager("elderly_care.db")
-        self.ui = UIComponents()
-        self.viz = DataVisualization()
-        self.forms = FormComponents()
-        
-        # Initialize elderly care specific database tables
-        self.init_care_database()
-        
-        # Elderly care management features
-        self.features = {
-            'health_monitoring': True,
-            'medication_management': True,
-            'appointment_scheduling': True,
-            'caregiver_coordination': True,
-            'emergency_response': True,
-            'daily_activity_tracking': True,
-            'nutrition_monitoring': True,
-            'social_engagement': True,
-            'health_analytics': True,
-            'family_communication': True,
-            'care_plan_management': True,
-            'ai_health_insights': True,
-            'fall_detection': True,
-            'vital_signs_monitoring': True,
-            'cognitive_assessment': True
-        }
-    
-    def init_care_database(self):
-        """Initialize elderly care specific database tables"""
-        # Create care recipients table
-        self.db_manager.execute_update('''
-            CREATE TABLE IF NOT EXISTS care_recipients (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                first_name TEXT NOT NULL,
-                last_name TEXT NOT NULL,
-                date_of_birth DATE,
-                gender TEXT,
-                address TEXT,
-                phone TEXT,
-                emergency_contact_name TEXT,
-                emergency_contact_phone TEXT,
-                medical_conditions TEXT,
-                allergies TEXT,
-                insurance_info TEXT,
-                care_level TEXT DEFAULT 'independent',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # Create medications table
-        self.db_manager.execute_update('''
-            CREATE TABLE IF NOT EXISTS medications (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                recipient_id INTEGER,
-                medication_name TEXT NOT NULL,
-                dosage TEXT,
+def main():
+    # Setup page and branding
+    UIComponents.setup_page_config()
+    UIComponents.load_custom_css()
+    UIComponents.display_header("Welcome to HumanKind", "AI Care. Human First.")
+
+    # Initialize agent
+    agent = HumanKindAgent()
+
+    # Sidebar navigation
+    page = st.sidebar.radio(
+        "Navigate",
+        [
+            "Home",
+            "Care Recipients",
+            "Medications",
+            "Appointments",
+            "Visualization",
+            "AI Assistant"
+        ]
+    )
+
+    # --- Home Page ---
+    if page == "Home":
+        UIComponents.display_section_header("About HumanKind")
+        UIComponents.display_info_box(
+            "HumanKind is your AI-powered elderly care assistant, designed to support families, caregivers, and seniors with compassion and technology."
+        )
+        st.write("Capabilities:")
+        for cap in agent.get_agent_capabilities():
+            st.markdown(f"✅ {cap}")
+
+    # --- Care Recipients ---
+    elif page == "Care Recipients":
+        UIComponents.display_section_header("Care Recipients")
+        name = FormComponents.input_text("Recipient Name", key="recipient_name")
+        age = FormComponents.input_number("Age", key="recipient_age", min_val=0, max_val=120)
+        if FormComponents.submit_button("Add Recipient", key="add_recipient"):
+            result = agent.process_user_input({
+                "action": "add_recipient",
+                "data": {"name": name, "age": age}
+            })
+            UIComponents.display_info_box(result["message"], "error" if result["status"] == "error" else "info")
+
+    # --- Medications ---
+    elif page == "Medications":
+        UIComponents.display_section_header("Medications")
+        med_name = FormComponents.input_text("Medication Name", key="med_name")
+        dosage = FormComponents.input_text("Dosage", key="med_dosage")
+        if FormComponents.submit_button("Add Medication", key="add_med"):
+            result = agent.process_user_input({
+                "action": "add_medication",
+                "data": {"name": med_name, "dosage": dosage}
+            })
+            UIComponents.display_info_box(result["message"], "error" if result["status"] == "error" else "info")
+
+    # --- Appointments ---
+    elif page == "Appointments":
+        UIComponents.display_section_header("Appointments")
+        st.info("Appointment scheduling will be added in future versions.")
+
+    # --- Visualization ---
+    elif page == "Visualization":
+        UIComponents.display_section_header("Visualization")
+        data = pd.DataFrame({
+            "Day": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            "Mood": [7, 6, 8, 5, 9]
+        })
+        st.write("Sample data:", data)
+        fig = DataVisualization.line_chart(data, x="Day", y="Mood", title="Mood Tracker")
+        st.plotly_chart(fig, use_container_width=True)
+
+    # --- AI Assistant ---
+    elif page == "AI Assistant":
+        UIComponents.display_section_header("AI Assistant")
+        user_prompt = FormComponents.input_textarea("Ask HumanKind anything:", key="ai_prompt")
+        if FormComponents.submit_button("Get Response", key="ai_btn"):
+            response = agent.generate_ai_response(user_prompt)
+            UIComponents.display_info_box(response)
+
+if __name__ == "__main__":
+    main()
                 frequency TEXT,
                 start_date DATE,
                 end_date DATE,
