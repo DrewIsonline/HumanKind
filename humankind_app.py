@@ -13,8 +13,7 @@ import os
 import sys
 from typing import Dict, List, Any, Optional
 
-# Add shared modules to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+# All modules are in the same directory, no path manipulation needed
 
 from base_agent import BaseAgent
 from ui_utils import UIComponents, DataVisualization, FormComponents
