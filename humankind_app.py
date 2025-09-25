@@ -18,8 +18,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'share
 
 from base_agent import BaseAgent
 from ui_utils import UIComponents, DataVisualization, FormComponents
-from data_processor import DataProcessor, DatabaseManager
-from config_manager import ConfigManager
 
 class ElderlyCareAgent(BaseAgent):
     """Premium Elderly Care Coordination Agent with advanced features"""
