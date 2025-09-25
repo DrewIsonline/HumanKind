@@ -18,18 +18,31 @@ def main():
     # Initialize agent
     agent = HumanKindAgent()
 
+def main():
+    # Setup page and branding
+    UIComponents.setup_page_config()
+    UIComponents.load_custom_css()
+    UIComponents.display_header("Welcome to HumanKind", "AI Care. Human First.")
+
+    # Initialize agent
+    agent = HumanKindAgent()
+
     # Sidebar navigation
-    page = st.sidebar.radio(
-        "Navigate",
-        [
-            "Home",
-            "Care Recipients",
-            "Medications",
-            "Appointments",
-            "Visualization",
-            "AI Assistant"
-        ]
-    )
+    menu_options = [
+        "Home",
+        "Care Recipients",
+        "Medications",
+        "Appointments",
+        "Visualization",
+        "AI Assistant"
+    ]
+
+    page = st.sidebar.radio("Navigate", menu_options)
+
+    # --- Home Page ---
+    if page == "Home":
+        ...
+
 
     # --- Home Page ---
     if page == "Home":
